@@ -44,11 +44,13 @@ The tested NatNet Python client was located at:
 ~/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient/
 ```
 
-The directory must contain:
 
-```text
+The NatNet Python client directory must contain the required SDK modules, including:
+
 NatNetClient.py
-```
+DataDescriptions.py
+MoCapData.py
+
 
 ## Run
 
