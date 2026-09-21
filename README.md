@@ -1,28 +1,42 @@
 # OptiTrack to ROS 2 Pose Streaming
 
-A simple setup for streaming OptiTrack Motive rigid-body poses into ROS 2 using the official OptiTrack NatNet Python client.
+A lightweight ROS 2 interface for streaming OptiTrack Motive rigid-body poses through the NatNet Python client.
+
+This repository contains the `PythonSample_ROS2.py` script used in my working OptiTrack–ROS 2 setup. The script connects the NatNet rigid-body stream to ROS 2 and publishes the tracked pose as a `geometry_msgs/msg/PoseStamped` message.
 
 ## Tested Setup
 
 * Ubuntu
 * ROS 2 Humble
 * OptiTrack Motive
-* NatNet SDK
+* NatNet SDK / NatNet Python Client
 * NatNet unicast streaming
 
 ## ROS 2 Output
 
-The working setup publishes OptiTrack rigid-body poses as:
+The publisher outputs:
 
 * Topic: `/optitrack/pose`
 * Message type: `geometry_msgs/msg/PoseStamped`
 * Frame ID: `optitrack`
 
+## Repository Contents
+
+```text
+optitrack_ros2_pose/
+├── PythonSample_ROS2.py
+├── README.md
+└── scripts/
+    └── run_optitrack.sh
+```
+
+`PythonSample_ROS2.py` contains the ROS 2 integration used for the working setup.
+
+The official OptiTrack `NatNetClient.py` is **not redistributed in this repository** and must be obtained from the OptiTrack NatNet SDK.
+
 ## Dependencies
 
-Install ROS 2 Humble and obtain the official OptiTrack NatNet SDK.
-
-This repository does not redistribute the NatNet SDK.
+Install ROS 2 Humble and obtain the OptiTrack NatNet SDK.
 
 The tested NatNet Python client was located at:
 
@@ -30,65 +44,77 @@ The tested NatNet Python client was located at:
 ~/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient/
 ```
 
-The ROS 2-enabled sample used was:
+The directory must contain:
 
 ```text
-PythonSample_ROS2.py
+NatNetClient.py
 ```
 
 ## Run
 
-Source ROS 2:
+Clone this repository:
 
 ```bash
-source /opt/ros/humble/setup.bash
+git clone https://github.com/Marsak24/optitrack_ros2_pose.git
+cd optitrack_ros2_pose
 ```
 
-Go to the NatNet Python client:
+By default, the launcher expects `NatNetClient.py` at:
 
-```bash
-cd ~/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient
+```text
+~/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient/
 ```
 
 Run:
 
 ```bash
-python3 PythonSample_ROS2.py
+./scripts/run_optitrack.sh
 ```
 
-Alternatively, use the included convenience script:
+If your NatNet SDK is installed somewhere else:
 
 ```bash
+NATNET_DIR=/path/to/NatNetSDK/samples/PythonClient \
 ./scripts/run_optitrack.sh
+```
+
+You can also run the publisher manually:
+
+```bash
+source /opt/ros/humble/setup.bash
+
+export PYTHONPATH=/path/to/NatNetSDK/samples/PythonClient:$PYTHONPATH
+
+python3 PythonSample_ROS2.py
 ```
 
 ## NatNet Configuration
 
 The tested setup used **unicast** streaming.
 
-When prompted by `PythonSample_ROS2.py`:
+When the program starts, select:
 
 ```text
 Select 0 for multicast and 1 for unicast: 1
 ```
 
-Enter:
+Then provide:
 
-* **Client Address:** IP address of the Ubuntu/ROS 2 computer
+* **Client Address:** IP address of the Ubuntu computer running ROS 2
 * **Server Address:** IP address of the computer running OptiTrack Motive
 * **Stream type:** `d` for datastream
 
-The actual addresses depend on the local OptiTrack network.
+The actual IP addresses depend on the local OptiTrack network.
 
-## Verify ROS 2 Output
+## Verify the ROS 2 Stream
 
-List the OptiTrack topic:
+List the topic:
 
 ```bash
 ros2 topic list | grep optitrack
 ```
 
-Inspect a pose:
+Inspect one pose:
 
 ```bash
 ros2 topic echo /optitrack/pose --once
@@ -102,6 +128,6 @@ ros2 topic hz /optitrack/pose
 
 ## Notes
 
-`PythonSample_ROS2.py` and `NatNetClient.py` are provided by the OptiTrack NatNet SDK and are not redistributed in this repository.
+This repository contains the ROS 2 integration used to publish OptiTrack rigid-body tracking data.
 
-This repository documents the setup used to connect OptiTrack Motive rigid-body tracking to ROS 2 and provides a convenience launcher for reproducing the workflow.
+The OptiTrack NatNet Python client (`NatNetClient.py`) is an external dependency and is not redistributed here.
