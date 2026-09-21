@@ -3,13 +3,21 @@ set -e
 
 source /opt/ros/humble/setup.bash
 
-NATNET_DIR="$HOME/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [ ! -f "$NATNET_DIR/PythonSample_ROS2.py" ]; then
-    echo "PythonSample_ROS2.py not found at:"
-    echo "$NATNET_DIR"
+# Path to the official OptiTrack NatNet Python client.
+# Override with NATNET_DIR if your SDK is installed elsewhere.
+NATNET_DIR="${NATNET_DIR:-$HOME/ros2_ws/src/natnet_ros2/deps/NatNetSDK/samples/PythonClient}"
+
+if [ ! -f "$NATNET_DIR/NatNetClient.py" ]; then
+    echo "ERROR: NatNetClient.py not found."
+    echo "Expected at:"
+    echo "$NATNET_DIR/NatNetClient.py"
+    echo
+    echo "Set NATNET_DIR to your NatNet SDK PythonClient directory."
     exit 1
 fi
 
-cd "$NATNET_DIR"
-python3 PythonSample_ROS2.py
+export PYTHONPATH="$NATNET_DIR${PYTHONPATH:+:$PYTHONPATH}"
+
+python3 "$REPO_DIR/PythonSample_ROS2.py"
